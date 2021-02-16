@@ -1,4 +1,6 @@
 <resources>
-    <string name="app_name">Provedor</string>
+    <string name="app_name">NetLink</string>
     <string name="cpf">cpf</string>
+    <string name="welcome">%1$s,\nbem vindo(a) à NetLink</string>
+    <string name="exit">Sair</string>
 </resources>

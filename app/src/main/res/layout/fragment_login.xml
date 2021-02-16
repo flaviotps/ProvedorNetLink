@@ -6,46 +6,45 @@
     android:windowSoftInputMode="adjustResize"
     android:background="@color/deep_blue"
     android:layout_width="match_parent"
-    android:paddingBottom="32dp"
     android:layout_height="wrap_content">
 
     <Button
         android:id="@+id/login"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="24dp"
         android:backgroundTint="@color/light_blue"
         android:text="ENTRAR"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/textInputLayout"
+        app:layout_constraintEnd_toEndOf="@+id/checkBox"
         app:layout_constraintStart_toStartOf="@+id/textInputLayout"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/checkBox" />
 
     <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        app:boxBackgroundColor="@android:color/white"
         android:id="@+id/textInputLayout"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="24dp"
-        app:startIconDrawable="@drawable/cpf_icon"
-        app:startIconContentDescription="@string/cpf"
-        app:endIconMode="clear_text"
+        app:boxBackgroundColor="@android:color/white"
         app:boxStrokeColor="#fff"
         app:boxStrokeWidth="2dp"
-        android:hint="CPF"
+        app:endIconMode="clear_text"
         app:hintTextColor="#DDDDDD"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/close">
+        app:layout_constraintTop_toBottomOf="@+id/close"
+        app:startIconContentDescription="@string/cpf"
+        app:startIconDrawable="@drawable/cpf_icon">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:inputType="number"
+            android:id="@+id/cpfInputText"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:text="00430577729" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -60,4 +59,25 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@android:drawable/ic_menu_close_clear_cancel" />
+
+    <CheckBox
+        android:textStyle="bold"
+        android:id="@+id/checkBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Lembrar"
+        android:textColor="@android:color/white"
+        app:layout_constraintEnd_toEndOf="@+id/textInputLayout"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout" />
+
+    <TextView
+        android:textStyle="bold"
+        android:textColor="@android:color/white"
+        android:id="@+id/cpfLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="CPF"
+        app:layout_constraintBottom_toTopOf="@+id/textInputLayout"
+        app:layout_constraintStart_toStartOf="@+id/textInputLayout" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

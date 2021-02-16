@@ -6,15 +6,22 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.lifecycle.MutableLiveData
 import com.flaviotps.provedor.*
-import com.flaviotps.provedor.data.BoletoInfo
+import com.flaviotps.provedor.data.TicketInfo
 import com.flaviotps.provedor.extensions.execute
 import com.flaviotps.provedor.extensions.hide
-import com.flaviotps.provedor.view.BoletoWebViewState
+import com.flaviotps.provedor.javascript.GET_TICKET
+import com.flaviotps.provedor.javascript.PRESS_LOGIN
+import com.flaviotps.provedor.javascript.SET_CPF
+import com.flaviotps.provedor.view.MainViewState
 import com.google.gson.Gson
+import org.koin.core.component.KoinApiExtension
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-class BoletoWebViewClientAdapter : WebViewClient() {
+@KoinApiExtension
+class TicketWebViewClientAdapter(private val cpf: String) : WebViewClient(), KoinComponent {
 
-    val boletoWebViewState = MutableLiveData<BoletoWebViewState>()
+    private val viewState by inject<MutableLiveData<MainViewState>>()
     private var jsonParser = Gson()
 
     override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
@@ -26,21 +33,21 @@ class BoletoWebViewClientAdapter : WebViewClient() {
         super.onPageFinished(view, url)
         url?.let { it ->
             if(it.contentEquals(LOGIN_PATH)){
-                view?.execute(SET_CPF)
+                view?.execute(SET_CPF.replace("%cpf%",cpf))
                 view?.execute(PRESS_LOGIN)
             }
-            if(it.contains(BOLETOS_PATH)){
-                view?.execute(GET_BOLETO) { json ->
-                    val boletos: MutableList<BoletoInfo> = jsonParser.fromJson(
+            if(it.contains(TICKETS_PATH)){
+                view?.execute(GET_TICKET) { json ->
+                    val tickets: MutableList<TicketInfo> = jsonParser.fromJson(
                             json,
-                            Array<BoletoInfo>::class.java
+                            Array<TicketInfo>::class.java
                     ).toMutableList()
 
-                    boletoWebViewState.postValue(BoletoWebViewState.Boleto.Loaded(boletos))
+                    viewState.postValue(MainViewState.WebView.Ticket.Loaded(tickets))
                 }
             }
-            if(it.contains(BOLETO_PATH, true) && it.contains(BOLETO_QUERY, true)){
-                boletoWebViewState.postValue(BoletoWebViewState.Boleto.Selected)
+            if(it.contains(TICKET_PATH, true) && it.contains(TICKET_QUERY, true)){
+                viewState.postValue(MainViewState.WebView.Ticket.Selected)
             }
         }
     }
@@ -52,13 +59,13 @@ class BoletoWebViewClientAdapter : WebViewClient() {
             failingUrl: String?
     ) {
         super.onReceivedError(view, errorCode, description, failingUrl)
-        boletoWebViewState.postValue(BoletoWebViewState.LoadingStatus.Error(errorCode,description,failingUrl))
+        viewState.postValue(MainViewState.WebView.Failed(errorCode,description,failingUrl))
     }
 
     override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
         url?.let {
             if(it.contains(INDEX_PATH, true)){
-                view?.loadUrl(BOLETO_URL)
+                view?.loadUrl(TICKET_URL)
             }
         }
         return super.shouldOverrideUrlLoading(view, url)

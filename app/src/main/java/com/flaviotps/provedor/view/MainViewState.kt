@@ -1,9 +1,22 @@
 package com.flaviotps.provedor.view
 
-sealed class MainViewState {
-    sealed class LoadingStatus : MainViewState() {
-        object Loading : LoadingStatus()
-        object Loaded : LoadingStatus()
-        object Error : LoadingStatus()
+import com.flaviotps.provedor.data.LoginResponse
+import com.flaviotps.provedor.data.TicketInfo
+import java.lang.Exception
+
+open class MainViewState {
+    sealed class Login : MainViewState() {
+        class Successful(val loginResponse: LoginResponse) : Login()
+        object Invalid : Login()
+        class Failed(val e:Exception) : Login()
+    }
+    sealed class WebView : MainViewState() {
+        class Failed(val errorCode: Int,
+                     val description: String?,
+                     val failingUrl: String?) : WebView()
+        sealed class Ticket : MainViewState(){
+            class Loaded(val tickets: MutableList<TicketInfo>) : Ticket()
+            object Selected : Ticket()
+        }
     }
 }

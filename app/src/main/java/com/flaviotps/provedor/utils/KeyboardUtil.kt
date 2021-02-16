@@ -25,7 +25,7 @@ class KeyboardUtil(act: Activity,private val contentView: View) {
             //check if the padding is 0 (if yes set the padding for the keyboard)
             if (contentView.paddingBottom != diff) {
                 //set the padding of the contentView for the keyboard
-                contentView.setPadding(0, 0, 0, diff)
+                contentView.setPadding(0, 0, 0, diff+16)
             }
         } else {
             //check if the padding is != 0 (if yes reset the padding)

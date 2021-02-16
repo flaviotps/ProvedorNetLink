@@ -15,7 +15,7 @@
     <color name="deep_blue_2">#2F409F</color>
 
     //boleto status
-    <color name="boleto_open">#FF7043</color>
-    <color name="boleto_paid">#66BB6A</color>
-    <color name="boleto_overdue">#EF5350</color>
+    <color name="ticket_open">#FF7043</color>
+    <color name="ticket_paid">#66BB6A</color>
+    <color name="ticket_overdue">#EF5350</color>
 </resources>

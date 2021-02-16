@@ -1,10 +1,10 @@
-package com.flaviotps.provedor
+package com.flaviotps.provedor.javascript
 
-const val SET_CPF = "document.getElementById(\"txt_cpf\").value = \"00430577729\""
+const val SET_CPF = "document.getElementById(\"txt_cpf\").value = \"%cpf%\""
 
 const val PRESS_LOGIN = "document.forms[\"central_login\"].submit()"
 
-const val GET_BOLETO = "function getBoletos(){\n" +
+const val GET_TICKET = "function getBoletos(){\n" +
         " var table = document.getElementsByClassName(\"table table-striped table-bordered table-hover\")[0];\n" +
         " var result = [];\n" +
         " for (var i = 1, nr = table.rows.length; i < nr; i++) {\n" +
