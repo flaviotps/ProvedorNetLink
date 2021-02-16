@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#3F51B5</color>
+    <color name="accent">@color/deep_blue_2</color>
+    <color name="purple_700">#3F51B5</color> //status bar
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+
+    //theme
+    <color name="light_blue">#1976D2</color>
+    <color name="deep_blue">#3F51B5</color>
+    <color name="deep_blue_2">#2F409F</color>
+
+    //boleto status
+    <color name="boleto_open">#FF7043</color>
+    <color name="boleto_paid">#66BB6A</color>
+    <color name="boleto_overdue">#EF5350</color>
+</resources>
