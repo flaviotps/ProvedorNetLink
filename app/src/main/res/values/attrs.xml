@@ -1,0 +1,9 @@
+<resources>
+
+    <declare-styleable name="MenuButton">
+        <attr name="android:text" />
+        <attr name="iconScale" format="float"/>
+        <attr name="icon" format="reference" />
+    </declare-styleable>
+
+</resources>

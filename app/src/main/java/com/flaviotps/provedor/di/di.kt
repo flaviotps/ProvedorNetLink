@@ -10,7 +10,7 @@ import org.koin.dsl.module
 import kotlin.math.sin
 
 val appModule = module {
-    viewModel { MainViewModel(get()) }
+    viewModel { MainViewModel() }
     viewModel { LoginViewModel(get()) }
     single { LoginRepository() }
     single { MutableLiveData<MainViewState>() }

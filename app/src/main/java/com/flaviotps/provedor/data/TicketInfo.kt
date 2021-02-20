@@ -1,3 +1,7 @@
 package com.flaviotps.provedor.data
 
-data class TicketInfo(val link:String, val value:String, val dueDate:String)
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
+
+@Parcelize
+data class TicketInfo(val link:String?, val value:String?, val dueDate:String?) : Parcelable

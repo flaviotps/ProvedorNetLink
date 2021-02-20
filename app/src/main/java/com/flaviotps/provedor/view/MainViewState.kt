@@ -15,7 +15,8 @@ open class MainViewState {
                      val description: String?,
                      val failingUrl: String?) : WebView()
         sealed class Ticket : MainViewState(){
-            class Loaded(val tickets: MutableList<TicketInfo>) : Ticket()
+            class LoadedOverdue(val tickets: MutableList<TicketInfo>) : Ticket()
+            class LoadedPaid(val tickets: MutableList<TicketInfo>) : Ticket()
             object Selected : Ticket()
         }
     }
