@@ -15,7 +15,6 @@
         android:theme="@style/Theme.Provedor"
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
-        <activity android:name=".view.HistoricTicketFragment"></activity>
         <activity
             android:name=".view.LoginActivity"
             android:screenOrientation="portrait">

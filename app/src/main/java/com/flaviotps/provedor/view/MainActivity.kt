@@ -1,13 +1,13 @@
 package com.flaviotps.provedor.view
 
-import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.view.animation.AlphaAnimation
+import android.view.animation.Animation
 import android.webkit.CookieManager
 import android.webkit.WebView
 import android.widget.TextView
@@ -54,6 +54,7 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+
     private fun registerObservablesAndListeners(){
 
         viewState.observe(this, {
@@ -61,28 +62,28 @@ class MainActivity : AppCompatActivity() {
                 is MainViewState.Login.Successful -> {
                     it.loginResponse.client?.let { client ->
 
-                        if(!getLastCpf(this).equals(client.cpf, true)){
+                        if (!getLastCpf(this).equals(client.cpf, true)) {
                             setLastCpf(client.cpf, this)
                             CookieManager.getInstance().removeAllCookies(null);
                             CookieManager.getInstance().flush()
                         }
 
-                            viewModel.client.postValue(client)
-                            welcome.text = getString(R.string.welcome , client.name)
-                            ticketWebViewClientAdapter = TicketWebViewClientAdapter(client)
-                            webView.javascript(true)
-                            webView.controller(ticketWebViewClientAdapter)
-                            webView.appCache(true)
-                            webView.domStorage(true)
-                            webView.loadUrl(PAID_TICKET_URL)
+                        viewModel.client.postValue(client)
+                        welcome.text = getString(R.string.welcome, client.name)
+                        ticketWebViewClientAdapter = TicketWebViewClientAdapter(client)
+                        webView.javascript(true)
+                        webView.controller(ticketWebViewClientAdapter)
+                        webView.appCache(true)
+                        webView.domStorage(true)
+                        webView.loadUrl(PAID_TICKET_URL)
 
                     }
                 }
                 is MainViewState.Login.Failed -> {
-                    Log.i(MainActivity::class.java.simpleName,"Failed")
+                    Log.i(MainActivity::class.java.simpleName, "Failed")
                 }
                 is MainViewState.Login.Invalid -> {
-                    Log.i(MainActivity::class.java.simpleName,"Invalid")
+                    Log.i(MainActivity::class.java.simpleName, "Invalid")
                 }
                 is MainViewState.WebView.Ticket.Selected -> {
                     showTicket()
@@ -94,15 +95,14 @@ class MainActivity : AppCompatActivity() {
                 is MainViewState.WebView.Ticket.LoadedPaid -> {
                     viewModel.paidTickets.postValue(it.tickets)
                     viewModel.client.value?.overdueBills?.let { count ->
-                        if(count > 0) {
+                        if (count > 0) {
                             webView.loadUrl(TICKET_URL)
-                        }else{
+                        } else {
                             showNoOpenTickets()
                         }
                     }
 
                     buttonHistoric.setOnClickListener { _ ->
-
                         val onHistoricTicketListener = object : OnHistoricTicketListener {
                             override fun onClick(ticket: TicketInfo) {
                                 ticket.link?.let { link ->
@@ -111,7 +111,10 @@ class MainActivity : AppCompatActivity() {
                             }
                         }
 
-                        val historicFragment = HistoricTicketFragment(it.tickets, onHistoricTicketListener)
+                        val historicFragment = HistoricTicketFragment(
+                            it.tickets,
+                            onHistoricTicketListener
+                        )
                         historicFragment.show(supportFragmentManager, HISTORIC_TICKET_FRAGMENT_TAG)
                     }
                 }

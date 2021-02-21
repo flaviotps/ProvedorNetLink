@@ -14,6 +14,7 @@ const val OPEN_TICKET_PATH = "/boleto/"
 
 //QUERY
 const val TICKET_QUERY = "boleto.php?titulo="
+const val PAID_TICKET_QUERY = "recibo.php?titulo="
 
 //EXTRA
 const val EXTRA_KEY_LOGIN_RESPONSE = "LOGIN_RESPONSE"

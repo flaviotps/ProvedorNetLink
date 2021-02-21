@@ -56,7 +56,8 @@ class TicketWebViewClientAdapter(private val appClient: AppClient) : WebViewClie
                     viewState.postValue(MainViewState.WebView.Ticket.LoadedOverdue(tickets))
                 }
             }
-            if(it.contains(OPEN_TICKET_PATH, true) && it.contains(TICKET_QUERY, true)){
+            if(it.contains(OPEN_TICKET_PATH, true) && it.contains(TICKET_QUERY, true) || it.contains(
+                    PAID_TICKET_QUERY, true)){
                 viewState.postValue(MainViewState.WebView.Ticket.Selected)
             }
             if(it.contains(PAID_TICKETS_PATH, true)){

@@ -10,9 +10,9 @@
 
 
     //theme
-    <color name="light_blue">#3490dc</color>
-    <color name="deep_blue">#3F51B5</color>
-    <color name="deep_blue_2">#2F409F</color>
+    <color name="light_blue">#2F7BBA</color>
+    <color name="deep_blue">#475BCD</color>
+    <color name="deep_blue_2">#3C4EB1</color>
 
     //boleto status
     <color name="ticket_open">#FF7043</color>
