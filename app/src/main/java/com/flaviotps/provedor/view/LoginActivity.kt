@@ -14,7 +14,6 @@ class LoginActivity : AppCompatActivity() {
 
     lateinit var access: Button
 
-    @KoinApiExtension
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setUpSplash()

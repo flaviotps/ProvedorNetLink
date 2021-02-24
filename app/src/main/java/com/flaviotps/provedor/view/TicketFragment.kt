@@ -9,9 +9,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.flaviotps.provedor.R
 import com.flaviotps.provedor.adapter.OnTicketListener
 import com.flaviotps.provedor.adapter.TicketAdapter
-import com.flaviotps.provedor.data.TicketInfo
+import com.flaviotps.provedor.data.AppTicket
 
-class TicketFragment(private var tickets: MutableList<TicketInfo>, private val onTicketListener: OnTicketListener) : Fragment() {
+class TicketFragment(private var tickets: MutableList<AppTicket>, private val onTicketListener: OnTicketListener) : Fragment() {
     private lateinit var recyclerOpen: RecyclerView
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

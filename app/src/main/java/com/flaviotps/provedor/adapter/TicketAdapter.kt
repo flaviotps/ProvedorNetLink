@@ -8,10 +8,10 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.flaviotps.provedor.R
-import com.flaviotps.provedor.data.TicketInfo
+import com.flaviotps.provedor.data.AppTicket
 
 
-class TicketAdapter(private val tickets: MutableList<TicketInfo>,
+class TicketAdapter(private val tickets: MutableList<AppTicket>,
                     private val context: Context,
                     private val onTicketListener: OnTicketListener
 ) : RecyclerView.Adapter<TicketViewHolder>() {
@@ -32,7 +32,7 @@ class TicketAdapter(private val tickets: MutableList<TicketInfo>,
 }
 
 interface OnTicketListener {
-    fun onClick(ticket: TicketInfo)
+    fun onClick(ticket: AppTicket)
 }
 
 
@@ -40,11 +40,13 @@ class TicketViewHolder(itemView: View, private var onTicketListener: OnTicketLis
     private val payButton: Button = itemView.findViewById(R.id.pay)
     private val dueDate: TextView = itemView.findViewById(R.id.duedate)
     private val value: TextView = itemView.findViewById(R.id.value)
-    fun setData(ticket: TicketInfo){
+    fun setData(ticket: AppTicket){
         dueDate.text = ticket.dueDate
         value.text = ticket.value
-        payButton.setOnClickListener {
-            onTicketListener.onClick(ticket)
+        ticket.id?.let {
+            payButton.setOnClickListener {
+                onTicketListener.onClick(ticket)
+            }
         }
     }
 }

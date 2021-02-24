@@ -4,12 +4,12 @@ import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-class AppClient(val name: String,
-                      val cpf: String,
-                      val blocked: String,
-                      val email: String,
-                      val agreement: String,
-                      val login: String,
-                      val password: String,
-                      val enabled: String,
-                      val overdueBills: Int) : Parcelable
+class AppClient(val name: String? = null,
+                val cpf: String? = null,
+                val blocked: String?= null ,
+                val email: String?= null ,
+                val agreement: String?= null,
+                val login: String?= null,
+                val password: String?= null,
+                val enabled: String?= null,
+                val overdueBills: Int?= null) : Parcelable

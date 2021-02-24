@@ -8,11 +8,11 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.flaviotps.provedor.R
-import com.flaviotps.provedor.data.TicketInfo
+import com.flaviotps.provedor.data.AppTicket
 import com.flaviotps.provedor.extensions.show
 
 
-class HistoricTicketAdapter(private val tickets: MutableList<TicketInfo>,
+class HistoricTicketAdapter(private val tickets: MutableList<AppTicket>,
                     private val context: Context,
                     private val onOnHistoricTickerListener: OnHistoricTicketListener
 ) : RecyclerView.Adapter<HistoricTicketViewHolder>() {
@@ -33,19 +33,18 @@ class HistoricTicketAdapter(private val tickets: MutableList<TicketInfo>,
 }
 
 interface OnHistoricTicketListener {
-    fun onClick(ticket: TicketInfo)
+    fun onClick(ticket: AppTicket)
 }
-
 
 class HistoricTicketViewHolder(itemView: View, private var onOnHistoricTickerListener: OnHistoricTicketListener) : RecyclerView.ViewHolder(itemView) {
     private val receiptButton: Button = itemView.findViewById(R.id.receipt)
     private val dueDate: TextView = itemView.findViewById(R.id.duedate)
     private val value: TextView = itemView.findViewById(R.id.value)
-    fun setData(ticket: TicketInfo){
+    fun setData(ticket: AppTicket){
         dueDate.text = ticket.dueDate
         ticket.value?.let { value.text = it }
         ticket.dueDate?.let { dueDate.text = it }
-        ticket.link?.let {
+        ticket.id?.let {
             receiptButton.show()
             receiptButton.setOnClickListener {
                     onOnHistoricTickerListener.onClick(ticket)

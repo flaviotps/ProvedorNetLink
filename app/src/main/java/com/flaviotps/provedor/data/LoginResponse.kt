@@ -7,4 +7,5 @@ import kotlinx.android.parcel.Parcelize
 class LoginResponse(
         var success: Boolean = false,
         var client: AppClient? = null,
-        var plan : AppPlano? = null) : Parcelable
+        var tickets: AppTickets? = null,
+        var plan : AppPlan? = null) : Parcelable

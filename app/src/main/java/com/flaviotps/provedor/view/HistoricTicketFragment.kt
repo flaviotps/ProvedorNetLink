@@ -9,10 +9,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.flaviotps.provedor.R
 import com.flaviotps.provedor.adapter.HistoricTicketAdapter
 import com.flaviotps.provedor.adapter.OnHistoricTicketListener
-import com.flaviotps.provedor.data.TicketInfo
+import com.flaviotps.provedor.data.AppTicket
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class HistoricTicketFragment (private var tickets: MutableList<TicketInfo>, private val onHistoricTicketListener: OnHistoricTicketListener) : BottomSheetDialogFragment() {
+class HistoricTicketFragment (private var tickets: MutableList<AppTicket>, private val onHistoricTicketListener: OnHistoricTicketListener) : BottomSheetDialogFragment() {
 
     private lateinit var recycler: RecyclerView
     private lateinit var closeButton: ImageButton

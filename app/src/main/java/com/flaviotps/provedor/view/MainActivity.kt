@@ -2,45 +2,38 @@ package com.flaviotps.provedor.view
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
-import android.view.animation.AlphaAnimation
-import android.view.animation.Animation
-import android.webkit.CookieManager
-import android.webkit.WebView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.lifecycle.MutableLiveData
 import com.flaviotps.provedor.*
 import com.flaviotps.provedor.adapter.OnHistoricTicketListener
 import com.flaviotps.provedor.adapter.OnTicketListener
-import com.flaviotps.provedor.adapter.TicketWebViewClientAdapter
+import com.flaviotps.provedor.data.AppClient
+import com.flaviotps.provedor.data.AppTicket
 import com.flaviotps.provedor.data.LoginResponse
-import com.flaviotps.provedor.data.TicketInfo
-import com.flaviotps.provedor.extensions.*
-import com.flaviotps.provedor.utils.createWebPrintJob
-import com.flaviotps.provedor.utils.getLastCpf
-import com.flaviotps.provedor.utils.setLastCpf
-import org.koin.android.ext.android.inject
+import com.flaviotps.provedor.data.TicketRequest
+import com.flaviotps.provedor.extensions.hide
+import com.flaviotps.provedor.extensions.show
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.core.component.KoinApiExtension
 
-
-@KoinApiExtension
 class MainActivity : AppCompatActivity() {
 
-    private val viewState by inject<MutableLiveData<MainViewState>>()
+
     private val viewModel: MainViewModel by viewModel()
 
-    private lateinit var webView: WebView
     private lateinit var welcome: TextView
-    private lateinit var loading: ConstraintLayout
-    private lateinit var ticketWebViewClientAdapter: TicketWebViewClientAdapter
-    private lateinit var buttonHistoric : MenuButton
+    private lateinit var buttonHistoric: MenuButton
+    private lateinit var buttonMyPlan: MenuButton
+    private lateinit var buttonAgreement: MenuButton
+    private lateinit var buttonUnlock: MenuButton
+    lateinit var loadingLayout: ConstraintLayout
+
+    private var historicFragment : HistoricTicketFragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,82 +42,121 @@ class MainActivity : AppCompatActivity() {
         registerObservablesAndListeners()
 
         intent.extras?.getParcelable<LoginResponse>(EXTRA_KEY_LOGIN_RESPONSE)?.let {
-            viewState.postValue(MainViewState.Login.Successful(it))
+            viewModel.viewState.postValue(MainViewState.OnLoginSuccessful(it))
         }
     }
 
+    private fun registerObservablesAndListeners() {
 
-
-    private fun registerObservablesAndListeners(){
-
-        viewState.observe(this, {
+        viewModel.viewState.observe(this, {
             when (it) {
-                is MainViewState.Login.Successful -> {
-                    it.loginResponse.client?.let { client ->
 
-                        if (!getLastCpf(this).equals(client.cpf, true)) {
-                            setLastCpf(client.cpf, this)
-                            CookieManager.getInstance().removeAllCookies(null);
-                            CookieManager.getInstance().flush()
-                        }
-
-                        viewModel.client.postValue(client)
-                        welcome.text = getString(R.string.welcome, client.name)
-                        ticketWebViewClientAdapter = TicketWebViewClientAdapter(client)
-                        webView.javascript(true)
-                        webView.controller(ticketWebViewClientAdapter)
-                        webView.appCache(true)
-                        webView.domStorage(true)
-                        webView.loadUrl(PAID_TICKET_URL)
-
+                is MainViewState.OnOpenTicketLoaded -> {
+                    loadingLayout.hide()
+                    it.html?.let { html ->
+                        val intent = Intent(this, WebViewActivity::class.java)
+                        intent.putExtra(EXTRA_KEY_HTML_RESPONSE, html)
+                        startActivity(intent)
                     }
                 }
-                is MainViewState.Login.Failed -> {
-                    Log.i(MainActivity::class.java.simpleName, "Failed")
-                }
-                is MainViewState.Login.Invalid -> {
-                    Log.i(MainActivity::class.java.simpleName, "Invalid")
-                }
-                is MainViewState.WebView.Ticket.Selected -> {
-                    showTicket()
-                }
-                is MainViewState.WebView.Ticket.LoadedOverdue -> {
-                    viewModel.overdueTickets.postValue(it.tickets)
-                    showOverdueTickets(it.tickets)
-                }
-                is MainViewState.WebView.Ticket.LoadedPaid -> {
-                    viewModel.paidTickets.postValue(it.tickets)
-                    viewModel.client.value?.overdueBills?.let { count ->
-                        if (count > 0) {
-                            webView.loadUrl(TICKET_URL)
-                        } else {
-                            showNoOpenTickets()
-                        }
-                    }
 
-                    buttonHistoric.setOnClickListener { _ ->
-                        val onHistoricTicketListener = object : OnHistoricTicketListener {
-                            override fun onClick(ticket: TicketInfo) {
-                                ticket.link?.let { link ->
-                                    webView.loadUrl(link)
-                                }
-                            }
-                        }
-
-                        val historicFragment = HistoricTicketFragment(
-                            it.tickets,
-                            onHistoricTicketListener
-                        )
-                        historicFragment.show(supportFragmentManager, HISTORIC_TICKET_FRAGMENT_TAG)
+                is MainViewState.OnReceiptLoaded -> {
+                    loadingLayout.hide()
+                    it.html?.let { html ->
+                        val intent = Intent(this, WebViewActivity::class.java)
+                        intent.putExtra(EXTRA_KEY_HTML_RESPONSE, html)
+                        startActivity(intent)
                     }
                 }
-                is MainViewState.WebView.Failed -> {
-                    it.description?.let { description ->
-                        Log.e(MainActivity::class.java.simpleName, description)
-                    }
+
+                is MainViewState.OnLoginSuccessful -> {
+                    addListeners(it)
+                    addOpenTickets(it)
+                    addTicketHistoric(it)
+                }
+
+                is MainViewState.OnError -> {
+                    loadingLayout.hide()
                 }
             }
         })
+    }
+
+    private fun addTicketHistoric(it: MainViewState.OnLoginSuccessful) {
+        it.loginResponse.tickets?.historic?.let { ticketsHistoric ->
+            if (ticketsHistoric.isNotEmpty()) {
+                buttonHistoric.setOnClickListener { _ ->
+                    val onHistoricTicketListener = object : OnHistoricTicketListener {
+                        override fun onClick(ticket: AppTicket) {
+                            historicFragment?.dismiss()
+                            loadingLayout.show()
+                            it.loginResponse.client?.let { client ->
+                                if (!client.login.isNullOrEmpty() && !client.password.isNullOrEmpty() && !ticket.id.isNullOrEmpty()) {
+                                    viewModel.getReceipt(TicketRequest(id = ticket.id, login = client.login, password = client.password))
+                                }
+                            }
+                        }
+                    }
+
+                    historicFragment = HistoricTicketFragment(
+                            ticketsHistoric,
+                            onHistoricTicketListener
+                    )
+                    historicFragment?.show(supportFragmentManager, HISTORIC_TICKET_FRAGMENT_TAG)
+                }
+            }
+        }
+    }
+
+    private fun addOpenTickets(it: MainViewState.OnLoginSuccessful) {
+        it.loginResponse.client?.let { client ->
+            welcome.text = getString(R.string.welcome, client.name)
+        }
+
+        it.loginResponse.tickets?.open?.let { openTickets ->
+            if (openTickets.isEmpty()) {
+                showNoOpenTickets()
+            } else {
+                showOverdueTickets(it.loginResponse.client, openTickets)
+            }
+        }
+    }
+
+    private fun addListeners(it: MainViewState.OnLoginSuccessful) {
+
+        buttonMyPlan.setOnClickListener { _ ->
+            if (it.loginResponse.plan != null) {
+                it.loginResponse.plan?.let { plan ->
+                    val planFragment = PlanFragment(plan)
+                    planFragment.show(supportFragmentManager, PLAN_FRAGMENT_TAG)
+                }
+            } else {
+                Toast.makeText(
+                        this,
+                        "Dados do plano inválidos",
+                        Toast.LENGTH_LONG
+                ).show()
+            }
+            it.loginResponse.plan?.let { plan ->
+
+            }
+        }
+
+        buttonAgreement.setOnClickListener { _ ->
+            it.loginResponse.client?.agreement?.let { agreement ->
+                Toast.makeText(
+                        this,
+                        "Em desenvolvimento (contrato: ${agreement})",
+                        Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+        buttonUnlock.setOnClickListener { _ ->
+            it.loginResponse.client?.blocked?.let { blocked ->
+                Toast.makeText(this, "Em desenvolvimento (blocked: ${blocked})", Toast.LENGTH_LONG)
+                        .show()
+            }
+        }
     }
 
     private fun showNoOpenTickets() {
@@ -133,10 +165,15 @@ class MainActivity : AppCompatActivity() {
                 .commit()
     }
 
-    private fun showOverdueTickets(it: MutableList<TicketInfo>) {
+    private fun showOverdueTickets(client: AppClient?, it: MutableList<AppTicket>) {
         val onTicketListener = object : OnTicketListener {
-            override fun onClick(ticket: TicketInfo) {
-                webView.loadUrl(ticket.link)
+            override fun onClick(ticket: AppTicket) {
+                client?.let {
+                    loadingLayout.show()
+                    if (!it.login.isNullOrEmpty() && !it.password.isNullOrEmpty() && !ticket.id.isNullOrEmpty()) {
+                        viewModel.getOpenTicket(TicketRequest(id = ticket.id, login = it.login, password = it.password))
+                    }
+                }
             }
         }
 
@@ -146,21 +183,18 @@ class MainActivity : AppCompatActivity() {
                 .commit()
     }
 
-    private fun showTicket() {
-        loading.hide()
-        createWebPrintJob(webView, getString(R.string.app_name), this@MainActivity)
-    }
-
-    private fun initViews(){
+    private fun initViews() {
         supportActionBar?.apply {
             displayOptions = ActionBar.DISPLAY_SHOW_CUSTOM
             setCustomView(R.layout.toolbar_custom)
             setDisplayHomeAsUpEnabled(false)
         }
-        webView = findViewById(R.id.webview)
-        loading = findViewById(R.id.loading)
         welcome = findViewById(R.id.welcome)
         buttonHistoric = findViewById(R.id.historic)
+        buttonUnlock = findViewById(R.id.buttonUnlock)
+        buttonAgreement = findViewById(R.id.buttonAgreement)
+        buttonMyPlan = findViewById(R.id.buttonMyPlan)
+        loadingLayout = findViewById(R.id.loadingLayout)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -170,12 +204,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when(item.itemId){
+        return when (item.itemId) {
             R.id.exit -> {
                 startActivity(Intent(this, LoginActivity::class.java))
                 finish()
                 true
-            }else -> {
+            }
+            else -> {
                 super.onOptionsItemSelected(item)
             }
         }

@@ -4,4 +4,5 @@ import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-data class TicketInfo(val link:String?, val value:String?, val dueDate:String?) : Parcelable
+class AppTickets(var open:MutableList<AppTicket>? = null, var historic:MutableList<AppTicket>? = null) : Parcelable
+
