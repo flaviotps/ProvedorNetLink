@@ -2,6 +2,7 @@ package com.flaviotps.provedor.view
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -34,6 +35,9 @@ class MainActivity : AppCompatActivity() {
     lateinit var loadingLayout: ConstraintLayout
 
     private var historicFragment : HistoricTicketFragment? = null
+    private var planFragment : PlanFragment? = null
+    private var ticketFragment :TicketFragment? = null
+    private var openTicketFragment : OpenTicketFragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,6 +54,10 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.viewState.observe(this, {
             when (it) {
+
+                is MainViewState.OnLoading -> {
+                    loadingLayout.show()
+                }
 
                 is MainViewState.OnOpenTicketLoaded -> {
                     loadingLayout.hide()
@@ -76,6 +84,10 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 is MainViewState.OnError -> {
+                    it.exception.message?.let { msg ->
+                        Log.e("MainActivity", msg)
+                        Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
+                    }
                     loadingLayout.hide()
                 }
             }
@@ -89,7 +101,6 @@ class MainActivity : AppCompatActivity() {
                     val onHistoricTicketListener = object : OnHistoricTicketListener {
                         override fun onClick(ticket: AppTicket) {
                             historicFragment?.dismiss()
-                            loadingLayout.show()
                             it.loginResponse.client?.let { client ->
                                 if (!client.login.isNullOrEmpty() && !client.password.isNullOrEmpty() && !ticket.id.isNullOrEmpty()) {
                                     viewModel.getReceipt(TicketRequest(id = ticket.id, login = client.login, password = client.password))
@@ -117,7 +128,7 @@ class MainActivity : AppCompatActivity() {
             if (openTickets.isEmpty()) {
                 showNoOpenTickets()
             } else {
-                showOverdueTickets(it.loginResponse.client, openTickets)
+                showOpenTickets(it.loginResponse.client, openTickets)
             }
         }
     }
@@ -127,8 +138,8 @@ class MainActivity : AppCompatActivity() {
         buttonMyPlan.setOnClickListener { _ ->
             if (it.loginResponse.plan != null) {
                 it.loginResponse.plan?.let { plan ->
-                    val planFragment = PlanFragment(plan)
-                    planFragment.show(supportFragmentManager, PLAN_FRAGMENT_TAG)
+                    planFragment = PlanFragment(plan)
+                    planFragment?.show(supportFragmentManager, PLAN_FRAGMENT_TAG)
                 }
             } else {
                 Toast.makeText(
@@ -165,22 +176,21 @@ class MainActivity : AppCompatActivity() {
                 .commit()
     }
 
-    private fun showOverdueTickets(client: AppClient?, it: MutableList<AppTicket>) {
+    private fun showOpenTickets(client: AppClient?, it: MutableList<AppTicket>) {
         val onTicketListener = object : OnTicketListener {
             override fun onClick(ticket: AppTicket) {
                 client?.let {
-                    loadingLayout.show()
-                    if (!it.login.isNullOrEmpty() && !it.password.isNullOrEmpty() && !ticket.id.isNullOrEmpty()) {
-                        viewModel.getOpenTicket(TicketRequest(id = ticket.id, login = it.login, password = it.password))
-                    }
+                    ticketFragment = TicketFragment(client,ticket)
+                    ticketFragment?.show(supportFragmentManager, OPEN_TICKET_FRAGMENT_TAG)
                 }
             }
         }
 
-        val ticketFragment = TicketFragment(it, onTicketListener)
-        supportFragmentManager.beginTransaction()
-                .add(R.id.ticketsContainerView, ticketFragment)
-                .commit()
+        openTicketFragment = OpenTicketFragment(it, onTicketListener).apply {
+            supportFragmentManager.beginTransaction()
+                    .add(R.id.ticketsContainerView, this)
+                    .commit()
+        }
     }
 
     private fun initViews() {

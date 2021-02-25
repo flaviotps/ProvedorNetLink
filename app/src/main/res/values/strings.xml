@@ -3,4 +3,7 @@
     <string name="cpf">cpf</string>
     <string name="welcome">%1$s,\nbem vindo(a) à NetLink</string>
     <string name="exit">Sair</string>
+
+
+    <string name="ticketValue">R$%1$s</string>
 </resources>

@@ -1,6 +1,5 @@
 package com.flaviotps.provedor.view
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,6 +13,7 @@ class MainViewModel(private val ticketRepository: TicketRepository): ViewModel()
     val viewState : MutableLiveData<MainViewState> = MutableLiveData()
 
     fun getOpenTicket(ticketRequest: TicketRequest){
+        viewState.postValue(MainViewState.OnLoading)
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 ticketRepository.getOpenTicket(ticketRequest)?.let {
@@ -28,6 +28,7 @@ class MainViewModel(private val ticketRepository: TicketRepository): ViewModel()
     }
 
     fun getReceipt(ticketRequest: TicketRequest){
+        viewState.postValue(MainViewState.OnLoading)
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 ticketRepository.getReceipt(ticketRequest)?.let {

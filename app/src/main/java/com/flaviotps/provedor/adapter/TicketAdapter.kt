@@ -9,6 +9,9 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.flaviotps.provedor.R
 import com.flaviotps.provedor.data.AppTicket
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class TicketAdapter(private val tickets: MutableList<AppTicket>,
@@ -41,8 +44,24 @@ class TicketViewHolder(itemView: View, private var onTicketListener: OnTicketLis
     private val dueDate: TextView = itemView.findViewById(R.id.duedate)
     private val value: TextView = itemView.findViewById(R.id.value)
     fun setData(ticket: AppTicket){
-        dueDate.text = ticket.dueDate
-        value.text = ticket.value
+
+
+        ticket.dueDate?.let {
+            it.split(" ").let { list ->
+                if(!list.isNullOrEmpty()){
+                    if(list[0].isNotEmpty()){
+                        val inputFormat: DateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                        val outputFormat: DateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                         inputFormat.parse(list[0])?.let { date ->
+                            val outputDateStr = outputFormat.format(date)
+                             dueDate.text = outputDateStr
+                        }
+                    }
+                }
+            }
+        }
+
+        value.text = "R$${ticket.value}"
         ticket.id?.let {
             payButton.setOnClickListener {
                 onTicketListener.onClick(ticket)

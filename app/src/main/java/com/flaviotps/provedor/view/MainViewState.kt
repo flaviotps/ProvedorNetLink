@@ -8,4 +8,5 @@ open class MainViewState {
     class OnOpenTicketLoaded(val html:String?) : MainViewState()
     class OnReceiptLoaded(val html:String?) : MainViewState()
     class OnError(val exception: Exception) : MainViewState()
+    object OnLoading : MainViewState()
 }
