@@ -1,6 +1,6 @@
 package com.flaviotps.provedor.repository
 
-import com.flaviotps.provedor.LOGIN_URL
+import com.flaviotps.provedor.BASE_API_URL
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -14,7 +14,7 @@ open class BaseRepository {
        .connectTimeout(60, TimeUnit.SECONDS)
        .build()
    private val retrofit: Retrofit = Retrofit.Builder()
-            .baseUrl(LOGIN_URL)
+            .baseUrl(BASE_API_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .client(okHttpClient)
             .build()

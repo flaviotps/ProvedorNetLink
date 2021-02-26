@@ -1,9 +1,11 @@
 package com.flaviotps.provedor
 
 // URLS
-const val LOGIN_URL = "http://54.232.27.159:8090"
+const val BASE_API_URL = "http://192.168.0.101:8090"
+const val BASE_SITE_URL = "http://186.194.46.140"
 //EXTRA
 const val EXTRA_KEY_LOGIN_RESPONSE = "LOGIN_RESPONSE"
+const val EXTRA_KEY_TICKET_GWT = "EXTRA_KEY_TICKET_GWT"
 const val EXTRA_KEY_HTML_RESPONSE = "EXTRA_KEY_HTML_RESPONSE"
 //FRAGMENT TAGS
 const val LOGIN_FRAGMENT_TAG = "LOGIN_FRAGMENT"

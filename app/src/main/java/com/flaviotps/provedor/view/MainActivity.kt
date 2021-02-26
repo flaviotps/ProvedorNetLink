@@ -63,7 +63,7 @@ class MainActivity : AppCompatActivity() {
                     loadingLayout.hide()
                     it.html?.let { html ->
                         val intent = Intent(this, WebViewActivity::class.java)
-                        intent.putExtra(EXTRA_KEY_HTML_RESPONSE, html)
+                        intent.putExtra(EXTRA_KEY_TICKET_GWT, html)
                         startActivity(intent)
                     }
                 }
@@ -180,7 +180,7 @@ class MainActivity : AppCompatActivity() {
         val onTicketListener = object : OnTicketListener {
             override fun onClick(ticket: AppTicket) {
                 client?.let {
-                    ticketFragment = TicketFragment(client,ticket)
+                    ticketFragment = TicketFragment(ticket)
                     ticketFragment?.show(supportFragmentManager, OPEN_TICKET_FRAGMENT_TAG)
                 }
             }
